@@ -1,0 +1,40 @@
+{
+  "name": "twistersfury/phalcon-json",
+  "description": "Phalcon Json Module - Adds Some Json Utility Classes To Work More Effectively With Phalcon",
+  "minimum-stability": "stable",
+  "license": "MIT",
+  "keywords": [
+    "phalcon",
+    "shared",
+    "php",
+    "utilities",
+    "helpers",
+    "json",
+    "jwt",
+    "json web token"
+  ],
+  "authors": [
+    {
+      "name": "Twister's Fury",
+      "email": "info@twistersfury.com"
+    }
+  ],
+  "autoload" : {
+    "files" : [
+      "src/phalcon_bootstrap.php"
+    ]
+  },
+  "require" : {
+    "php": "^7.0",
+    "ext-phalcon": "^3.2.0",
+    "firebase/php-jwt": "^4.0",
+    "twistersfury/phalcon-shared": "~1.0.0"
+  },
+  "require-dev": {
+    "codeception/codeception": "^2.3.3",
+    "phalcon/ide-stubs": "^3.1.0",
+    "mikey179/vfsStream": "v1.6.4",
+    "phalcon/incubator": "3.2.x-dev",
+    "vlucas/phpdotenv": "^2.4"
+  }
+}

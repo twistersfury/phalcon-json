@@ -1,0 +1,4 @@
+actor: CoverageTester
+modules:
+    enabled:
+        - \Helper\Coverage
