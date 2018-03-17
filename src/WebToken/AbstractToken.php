@@ -19,6 +19,7 @@
 
         private $apiKey = null;
         private $hashAlgorithm = null;
+        private $expirationLength = null;
 
         public function __construct() {
             if (!$this->getDI()->get('config')->get('json')) {
@@ -28,6 +29,7 @@
             }
             
             $this->setAlgorithm($this->getDI()->get('config')->json->algorithm ?? 'HS512');
+            $this->setExpirationLength($this->getDI()->get('config')->json->expirationLength ?? 300);
         }
 
         protected function getSecret() : string {
@@ -47,7 +49,7 @@
             return $this->hashAlgorithm;
         }
 
-        public function setAlgorithm(string $hashAlgorithm)
+        public function setAlgorithm(string $hashAlgorithm) : self
         {
             if (!$this->isAlgorithmValid($hashAlgorithm)) {
                 throw new \InvalidArgumentException('Hash Algorithm Invalid: ' . $hashAlgorithm);
@@ -58,16 +60,23 @@
             return $this;
         }
 
-        public function isAlgorithmValid(string $hashAlgorithm)
+        protected function isAlgorithmValid(string $hashAlgorithm) : bool
         {
             return $hashAlgorithm !== '';
         }
         
-        protected function getExpirationLength() : int
+        public function getExpirationLength() : int
         {
-            return $this->getDI()->get('config')->json->expiration ?? 300;
+            return $this->expirationLength;
+        }
+        
+        public function setExpirationLength(int $expirationLength) : self
+        {
+            $this->expirationLength = $expirationLength;
+            
+            return $this;
         }
 
-        abstract function generateToken(array $tokenData, array $tokenBase = []);
-        abstract function parseToken(string $jsonToken);
+        abstract function generateToken(array $tokenData, array $tokenBase = []) : string;
+        abstract function parseToken(string $jsonToken) : array;
     }
