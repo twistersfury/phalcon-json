@@ -89,7 +89,7 @@
          * @return object
          * @codeCoverageIgnore
          */
-        public function decode(string $jsonToken) : array
+        public function decode(string $jsonToken) : object
         {
             $className = $this->className;
             return $className::decode(
