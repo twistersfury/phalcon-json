@@ -34,7 +34,7 @@
          *
          * @return string
          */
-        public function generateToken(array $tokenData, array $tokenBase = [])
+        public function generateToken(array $tokenData, array $tokenBase = []) : string
         {
             /** @var \Phalcon\Security\Random $randomGenerator */
             $randomGenerator = $this->getDI()->get('\Phalcon\Security\Random');
@@ -73,7 +73,8 @@
          * @return string
          * @codeCoverageIgnore
          */
-        public function encode(array $tokenData) {
+        public function encode(array $tokenData) : string
+        {
             $className = $this->className;
             return $className::encode(
                 $tokenData,
@@ -88,7 +89,7 @@
          * @return object
          * @codeCoverageIgnore
          */
-        public function decode(string $jsonToken)
+        public function decode(string $jsonToken) : array
         {
             $className = $this->className;
             return $className::decode(
