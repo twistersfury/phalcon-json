@@ -37,9 +37,9 @@
                 [
                     'iat'  => time(),
                     'jti'  => $randomGenerator->hex( 32 ),
-                    'iss'  => 'inventory-system',
+                    'iss'  => 'twistersfury/phalcon-json',
                     'nbf'  => time(),
-                    'exp'  => time() + 300,
+                    'exp'  => time() + $this->getExpirationLength(),
                 ],
                 $tokenBase
             );
