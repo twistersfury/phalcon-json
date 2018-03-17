@@ -20,6 +20,7 @@
         private $apiKey = null;
         private $hashAlgorithm = null;
         private $expirationLength = null;
+        private $tokenIssuer = null;
 
         public function __construct() {
             if (!$this->getDI()->get('config')->get('json')) {
@@ -30,6 +31,7 @@
             
             $this->setAlgorithm($this->getDI()->get('config')->json->algorithm ?? 'HS512');
             $this->setExpirationLength($this->getDI()->get('config')->json->expirationLength ?? 300);
+            $this->setIssuer($this->getDI()->get('config')->json->issuer ?? 'twistersfury/phalcon-json');
         }
 
         protected function getSecret() : string {
@@ -75,6 +77,18 @@
             $this->expirationLength = $expirationLength;
             
             return $this;
+        }
+        
+        public function setIssuer(string $issuer) : self
+        {
+            $this->tokenIssuer = $issuer;
+            
+            return $this;
+        }
+        
+        public function getIssuer() : string
+        {
+            return $this->tokenIssuer;
         }
 
         abstract function generateToken(array $tokenData, array $tokenBase = []) : string;
