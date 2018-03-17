@@ -14,4 +14,4 @@
             [
                 __NAMESPACE__ => __DIR__
             ]
-        )->register();
+        )->register(true);
