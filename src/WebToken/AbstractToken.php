@@ -92,5 +92,5 @@
         }
 
         abstract function generateToken(array $tokenData, array $tokenBase = []) : string;
-        abstract function parseToken(string $jsonToken) : object;
+        abstract function parseToken(string $jsonToken) : \stdClass;
     }
