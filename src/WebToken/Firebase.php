@@ -10,14 +10,20 @@
 
     namespace TwistersFury\Phalcon\Json\WebToken;
 
-    use Firebase\JWT\JWT;
-
     class Firebase extends AbstractToken
     {
+        private $className = null;
+        
         public function __construct() {
             parent::__construct();
 
-            if (!class_exists('\Firebase\JWT\JWT')) {
+            if (class_exists('\Firebase\JWT\JWT')) {
+                $this->className = '\Firebase\JWT\JWT';
+            } elseif (class_exists('\JWT') {
+                $this->className = '\JWT'; 
+            }
+            
+            if (!$this->className) {
                 throw new \RuntimeException('Missing Firebase JWT Library'); //@cofffdeCoverageIgnore
             }
         }
@@ -68,7 +74,8 @@
          * @codeCoverageIgnore
          */
         public function encode(array $tokenData) {
-            return JWT::encode(
+            $className = $this->className;
+            return $className::encode(
                 $tokenData,
                 $this->getSecret(),
                 $this->getAlgorithm()
@@ -83,7 +90,8 @@
          */
         public function decode(string $jsonToken)
         {
-            return JWT::decode(
+            $className = $this->className;
+            return $className::decode(
                 $jsonToken,
                 $this->getSecret(),
                 [$this->getAlgorithm()]
