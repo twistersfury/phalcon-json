@@ -19,7 +19,7 @@
 
             if (class_exists('\Firebase\JWT\JWT')) {
                 $this->className = '\Firebase\JWT\JWT';
-            } elseif (class_exists('\JWT') {
+            } elseif (class_exists('\JWT')) {
                 $this->className = '\JWT'; 
             }
             
