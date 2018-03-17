@@ -43,7 +43,7 @@
                 [
                     'iat'  => time(),
                     'jti'  => $randomGenerator->hex( 32 ),
-                    'iss'  => 'twistersfury/phalcon-json',
+                    'iss'  => $this->getIssuer(),
                     'nbf'  => time(),
                     'exp'  => time() + $this->getExpirationLength(),
                 ],
