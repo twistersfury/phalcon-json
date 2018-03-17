@@ -18,7 +18,7 @@
         use Injectable;
 
         private $apiKey = null;
-        private $hashAlgorithm = 'HS512';
+        private $hashAlgorithm = null;
 
         public function __construct() {
             if (!$this->getDI()->get('config')->get('json')) {
@@ -26,6 +26,8 @@
             } else if (!file_exists($this->getDI()->get('config')->json->get('keyFile'))) {
                 throw new \RuntimeException('Missing JSON Web Token Key File');
             }
+            
+            $this->setAlgorithm($this->getDI()->get('config')->json->algorithm ?? 'HS512');
         }
 
         protected function getSecret() : string {
@@ -59,6 +61,11 @@
         public function isAlgorithmValid(string $hashAlgorithm)
         {
             return $hashAlgorithm !== '';
+        }
+        
+        protected function getExpirationLength() : int
+        {
+            return $this->getDI()->get('config')->json->expiration ?? 300;
         }
 
         abstract function generateToken(array $tokenData, array $tokenBase = []);
