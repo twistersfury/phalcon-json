@@ -58,13 +58,11 @@
         /**
          * @param string $jsonToken
          *
-         * @return array
+         * @return \stdClass
          */
-        public function parseToken(string $jsonToken) : array
+        public function parseToken(string $jsonToken) : \stdClass
         {
-            $tokenData = $this->decode($jsonToken);
-
-            return json_decode(json_encode($tokenData->data), true);
+            return $this->decode($jsonToken);
         }
 
         /**
