@@ -13,28 +13,40 @@
 
     use TwistersFury\Phalcon\Shared\Traits\Injectable;
     use Phalcon\Di\InjectionAwareInterface;
+    use Phalcon\DiInterface;
 
     abstract class AbstractToken implements InjectionAwareInterface
     {
-        use Injectable;
+        use Injectable {
+            setDI as setDIInjectable
+        };
 
         private $apiKey = null;
         private $hashAlgorithm = null;
         private $expirationLength = null;
         private $tokenIssuer = null;
 
-        public function __construct() {
-            if (!$this->getDI()->get('config')->get('json')) {
+        public function setDI(DiInterface $di) {
+            if (!$di->get('config')->get('json')) {
                 throw new \RuntimeException('JSON Configuration Missing');
-            } else if (!file_exists($this->getDI()->get('config')->json->get('keyFile'))) {
+            } else if (!file_exists($di->get('config')->json->get('keyFile'))) {
                 throw new \RuntimeException('Missing JSON Web Token Key File');
-            } elseif (!$this->getDI()->has('crypt')) {
+            } elseif (!$di->has('crypt')) {
                 throw new \RuntimeException('Missing "crypt" service in DIC');
             }
             
-            $this->setAlgorithm($this->getDI()->get('config')->json->algorithm ?? 'HS512');
-            $this->setExpirationLength($this->getDI()->get('config')->json->expirationLength ?? 300);
-            $this->setIssuer($this->getDI()->get('config')->json->issuer ?? 'twistersfury/phalcon-json');
+            $this->loadDefaultConfig();
+            
+            return parent::setDIInjectable($di);
+        }
+        
+        protected function loadDefaultConfig() : self
+        {
+            $this->hashAlgorithm    ?? $this->setAlgorithm($this->getDI()->get('config')->json->algorithm ?? 'HS512');
+            $this->expirationLength ?? $this->setExpirationLength($this->getDI()->get('config')->json->expirationLength ?? 300);
+            $this->tokenIssuer      ?? $this->setIssuer($this->getDI()->get('config')->json->issuer ?? 'twistersfury/phalcon-json');
+            
+            return $this;
         }
 
         protected function getSecret() : string {
