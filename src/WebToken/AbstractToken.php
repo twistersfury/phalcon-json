@@ -12,8 +12,9 @@
     namespace TwistersFury\Phalcon\Json\WebToken;
 
     use TwistersFury\Phalcon\Shared\Traits\Injectable;
+    use Phalcon\Di\InjectionAwareInterface;
 
-    abstract class AbstractToken
+    abstract class AbstractToken implements InjectAwareInterface
     {
         use Injectable;
 
@@ -27,6 +28,8 @@
                 throw new \RuntimeException('JSON Configuration Missing');
             } else if (!file_exists($this->getDI()->get('config')->json->get('keyFile'))) {
                 throw new \RuntimeException('Missing JSON Web Token Key File');
+            } elseif (!$this->getDI()->has('crypt')) {
+                throw new \RuntimeException('Missing "crypt" service in DIC');
             }
             
             $this->setAlgorithm($this->getDI()->get('config')->json->algorithm ?? 'HS512');
