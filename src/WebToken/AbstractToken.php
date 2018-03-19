@@ -18,8 +18,8 @@
     abstract class AbstractToken implements InjectionAwareInterface
     {
         use Injectable {
-            setDI as setDIInjectable
-        };
+            setDI as setDIInjectable;
+        }
 
         private $apiKey = null;
         private $hashAlgorithm = null;
@@ -27,12 +27,14 @@
         private $tokenIssuer = null;
 
         public function setDI(DiInterface $di) {
-            if (!$di->get('config')->get('json')) {
-                throw new \RuntimeException('JSON Configuration Missing');
-            } else if (!file_exists($di->get('config')->json->get('keyFile'))) {
-                throw new \RuntimeException('Missing JSON Web Token Key File');
-            } elseif (!$di->has('crypt')) {
+            if (!$di->has('crypt')) {
                 throw new \RuntimeException('Missing "crypt" service in DIC');
+            } elseif (!$di->has('config')) {
+                throw new \RuntimeException('Missing "config" service in DIC');
+            } elseif (!$di->get('config')->get('json')) {
+                throw new \RuntimeException('JSON Configuration Key Missing ("json")');
+            } else if (!file_exists($di->get('config')->json->get('keyFile'))) {
+                throw new \RuntimeException('Missing JSON Web Token Key File ("keyFile")');
             }
             
             $this->loadDefaultConfig();
