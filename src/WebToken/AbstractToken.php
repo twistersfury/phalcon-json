@@ -14,7 +14,7 @@
     use TwistersFury\Phalcon\Shared\Traits\Injectable;
     use Phalcon\Di\InjectionAwareInterface;
 
-    abstract class AbstractToken implements InjectAwareInterface
+    abstract class AbstractToken implements InjectionAwareInterface
     {
         use Injectable;
 
