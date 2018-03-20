@@ -15,8 +15,6 @@
         private $className = null;
         
         public function __construct() {
-            parent::__construct();
-
             if (class_exists('\Firebase\JWT\JWT')) {
                 $this->className = '\Firebase\JWT\JWT';
             } elseif (class_exists('\JWT')) {

@@ -16,17 +16,17 @@
     {
         public $wasCalled = false;
 
-        public function encode(array $tokenData)
+        public function encode(array $tokenData) : string
         {
             $this->wasCalled = $tokenData;
 
             return 'some-string';
         }
 
-        public function decode(string $jsonToken)
+        public function decode(string $jsonToken) : \stdClass
         {
             $this->wasCalled = $jsonToken;
 
-            return ['some' => 'value'];
+            return (object) ['some' => 'value'];
         }
     }

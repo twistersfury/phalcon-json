@@ -52,22 +52,22 @@ class AbstractTokenTest extends Unit
     }
 
     // tests
-    public function testConstructThrowsConfigException()
+    public function testThrowsConfigException()
     {
-        $this->tester->expectException(new \RuntimeException('JSON Configuration Missing'), function() {
+        $this->tester->expectException(new \RuntimeException('JSON Configuration Key Missing ("json")'), function() {
             $diInstance = new FactoryDefault();
             $diInstance->set('config', new Config([]));
 
             Di::setDefault($diInstance);
 
-            new AbstractToken();
+            $diInstance->get(AbstractToken::class);
         });
     }
 
-    public function testConstructThrowsKeyException()
+    public function testThrowsKeyException()
     {
         $this->tester->expectException(
-            new \RuntimeException('Missing JSON Web Token Key File'),
+            new \RuntimeException('Missing JSON Web Token Key File ("keyFile")'),
             function() {
                 $filesRoot = vfsStream::setup('root');
 
@@ -76,7 +76,7 @@ class AbstractTokenTest extends Unit
 
                 Di::setDefault($diInstance);
 
-                new AbstractToken();
+                $diInstance->get(AbstractToken::class);
             }
         );
     }

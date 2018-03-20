@@ -14,17 +14,17 @@
 
     class AbstractToken extends sourceToken
     {
-        public function generateToken(array $tokenData, array $tokenBase = null)
+        public function generateToken(array $tokenData, array $tokenBase = null) : string
         {
             throw new \Exception("Not Implemented");
         }
 
-        public function parseToken(string $jsonToken): array
+        public function parseToken(string $jsonToken): \stdClass
         {
             throw new \Exception("Not Implemented");
         }
 
-        public function isAlgorithmValid(string $hashAlgorithm)
+        public function isAlgorithmValid(string $hashAlgorithm) : bool
         {
             if ($hashAlgorithm === 'invalid') {
                 return false;

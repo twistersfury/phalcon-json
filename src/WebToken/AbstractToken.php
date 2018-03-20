@@ -27,26 +27,33 @@
         private $tokenIssuer = null;
 
         public function setDI(DiInterface $di) {
-            if (!$di->has('crypt')) {
-                throw new \RuntimeException('Missing "crypt" service in DIC');
-            } elseif (!$di->has('config')) {
-                throw new \RuntimeException('Missing "config" service in DIC');
-            } elseif (!$di->get('config')->get('json')) {
-                throw new \RuntimeException('JSON Configuration Key Missing ("json")');
-            } else if (!file_exists($di->get('config')->json->get('keyFile'))) {
-                throw new \RuntimeException('Missing JSON Web Token Key File ("keyFile")');
-            }
-            
+            $this->setDIInjectable($di);
             $this->loadDefaultConfig();
-            
-            return parent::setDIInjectable($di);
         }
         
         protected function loadDefaultConfig() : self
         {
-            $this->hashAlgorithm    ?? $this->setAlgorithm($this->getDI()->get('config')->json->algorithm ?? 'HS512');
-            $this->expirationLength ?? $this->setExpirationLength($this->getDI()->get('config')->json->expirationLength ?? 300);
-            $this->tokenIssuer      ?? $this->setIssuer($this->getDI()->get('config')->json->issuer ?? 'twistersfury/phalcon-json');
+            if (!$this->getDI()->has('crypt')) {
+                throw new \RuntimeException('Missing "crypt" service in DIC');
+            } elseif (!$this->getDI()->has('config')) {
+                throw new \RuntimeException('Missing "config" service in DIC');
+            } elseif (!$this->getDI()->get('config')->get('json')) {
+                throw new \RuntimeException('JSON Configuration Key Missing ("json")');
+            } else if (!file_exists($this->getDI()->get('config')->json->get('keyFile'))) {
+                throw new \RuntimeException('Missing JSON Web Token Key File ("keyFile")');
+            }
+
+            if (!$this->hashAlgorithm) {
+                $this->setAlgorithm($this->getDI()->get('config')->json->algorithm ?? 'HS512');
+            }
+
+            if (!$this->expirationLength) {
+                $this->setExpirationLength($this->getDI()->get('config')->json->expirationLength ?? 300);
+            }
+
+            if (!$this->tokenIssuer) {
+                $this->setIssuer($this->getDI()->get('config')->json->issuer ?? 'twistersfury/phalcon-json');
+            }
             
             return $this;
         }
