@@ -11,23 +11,20 @@
 
     namespace TwistersFury\Phalcon\Json\WebToken;
 
-    use TwistersFury\Phalcon\Shared\Traits\Injectable;
+    use Phalcon\Di\Injectable;
     use Phalcon\Di\InjectionAwareInterface;
     use Phalcon\DiInterface;
 
-    abstract class AbstractToken implements InjectionAwareInterface
+    abstract class AbstractToken extends Injectable implements InjectionAwareInterface
     {
-        use Injectable {
-            setDI as setDIInjectable;
-        }
-
         private $apiKey = null;
         private $hashAlgorithm = null;
         private $expirationLength = null;
         private $tokenIssuer = null;
 
         public function setDI(DiInterface $di) {
-            $this->setDIInjectable($di);
+            parent::setDI($di);
+
             $this->loadDefaultConfig();
         }
         

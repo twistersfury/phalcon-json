@@ -45,7 +45,7 @@ class FirebaseTest extends Unit
 
         Di::setDefault($diInstance);
 
-        $this->testSubject = new Firebase();
+        $this->testSubject = $diInstance->get(Firebase::class);
     }
 
     protected function _after()

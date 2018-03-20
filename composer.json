@@ -24,14 +24,20 @@
       "src/phalcon_bootstrap.php"
     ]
   },
+  "repositories": [
+    {
+      "type": "git",
+      "url" : "https://github.com/tobiasstadler/infection.git"
+    }
+  ],
   "require" : {
     "php": "^7.0",
     "ext-phalcon": "^3.2.0",
-    "firebase/php-jwt": "^2.0|^4.0",
-    "twistersfury/phalcon-shared": "~1.0.2"
+    "firebase/php-jwt": "^2.0|^4.0"
   },
   "require-dev": {
-    "codeception/codeception": "^2.3.3",
+    "codeception/codeception": "^2.4",
+    "infection/infection": "dev-master",
     "phalcon/ide-stubs": "^3.1.0",
     "mikey179/vfsStream": "v1.6.4",
     "phalcon/incubator": "3.2.x-dev",
