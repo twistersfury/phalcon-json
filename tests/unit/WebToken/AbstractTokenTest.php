@@ -43,7 +43,7 @@ class AbstractTokenTest extends Unit
 
         Di::setDefault($diInstance);
 
-        $this->testSubject = new AbstractToken();
+        $this->testSubject = $diInstance->get(AbstractToken::class);
     }
 
     protected function _after()
@@ -81,12 +81,6 @@ class AbstractTokenTest extends Unit
         );
     }
 
-//    public function testAlgorithm() {
-//        $this->tester->assertEquals('HS512', $this->testSubject->getAlgorithm());
-//        $this->tester->assertSame($this->testSubject, $this->testSubject->setAlgorithm('SomethingElse'));
-//        $this->tester->assertEquals('SomethingElse', $this->testSubject->getAlgorithm());
-//    }
-
     public function testAlgorithmThrowsException() {
         $this->tester->expectException(new \InvalidArgumentException('Hash Algorithm Invalid: invalid'), function() {
             $this->testSubject->setAlgorithm('invalid');
@@ -99,5 +93,12 @@ class AbstractTokenTest extends Unit
 
         $this->tester->assertEquals('some-master-keysome-key', $reflectionMethod->invoke($this->testSubject));
         $this->tester->assertEquals('some-master-keysome-key', $reflectionMethod->invoke($this->testSubject));
+    }
+
+    public function testDefaultConfig()
+    {
+        $this->assertEquals(300, $this->testSubject->getExpirationLength());
+        $this->assertEquals('twistersfury/phalcon-json', $this->testSubject->getIssuer());
+        $this->assertEquals('HS512', $this->testSubject->getAlgorithm());
     }
 }
