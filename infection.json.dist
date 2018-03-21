@@ -1,0 +1,15 @@
+{
+    "timeout": 300,
+    "source": {
+        "directories": [
+            "src"
+        ]
+    },
+    "logs": {
+        "text": "infection-log.txt"
+    },
+    "framework": "codeception",
+    "codeception": {
+
+    }
+}

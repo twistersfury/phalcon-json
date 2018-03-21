@@ -7,3 +7,4 @@ htdocs/assets/
 .idea/
 
 tests/_output/
+infection-log.*
