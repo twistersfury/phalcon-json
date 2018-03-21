@@ -21,6 +21,11 @@
         private $hashAlgorithm = null;
         private $expirationLength = null;
         private $tokenIssuer = null;
+        private $startTime = null;
+
+        public function __construct() {
+            $this->setStartTime(time());
+        }
 
         public function setDI(DiInterface $di) {
             parent::setDI($di);
@@ -28,7 +33,7 @@
             $this->loadDefaultConfig();
         }
         
-        protected function loadDefaultConfig() : self
+        private function loadDefaultConfig() : self
         {
             if (!$this->getDI()->has('crypt')) {
                 throw new \RuntimeException('Missing "crypt" service in DIC');
@@ -83,7 +88,7 @@
             return $this;
         }
 
-        protected function isAlgorithmValid(string $hashAlgorithm) : bool
+        private function isAlgorithmValid(string $hashAlgorithm) : bool
         {
             return $hashAlgorithm !== '';
         }
@@ -110,6 +115,18 @@
         public function getIssuer() : string
         {
             return $this->tokenIssuer;
+        }
+
+        public function getStartTime() : int
+        {
+            return $this->startTime;
+        }
+
+        public function setStartTime(int $startTime) : self
+        {
+            $this->startTime = $startTime;
+
+            return $this;
         }
 
         abstract function generateToken(array $tokenData, array $tokenBase = []) : string;

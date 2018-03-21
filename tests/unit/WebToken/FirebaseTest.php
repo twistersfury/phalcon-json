@@ -16,7 +16,7 @@ use Phalcon\Config;
 use Phalcon\Crypt;
 use Phalcon\Di;
 use Phalcon\Di\FactoryDefault;
-use TwistersFury\Phalcon\Json\Tests\FirebaseTest as Firebase;
+use TwistersFury\Phalcon\Json\WebToken\Firebase;
 
 class FirebaseTest extends Unit
 {
@@ -30,9 +30,6 @@ class FirebaseTest extends Unit
 
     protected function _before()
     {
-        require_once __DIR__ . '/../../_data/WebToken/AbstractToken.php';
-        require_once __DIR__ . '/../../_data/WebToken/FirebaseTest.php';
-
         $filesRoot = vfsStream::setup('root');
         $filesRoot->addChild(
             vfsStream::newFile('someFile.key')
@@ -46,6 +43,8 @@ class FirebaseTest extends Unit
         Di::setDefault($diInstance);
 
         $this->testSubject = $diInstance->get(Firebase::class);
+
+        $this->testSubject->setStartTime(time());
     }
 
     protected function _after()
@@ -53,17 +52,32 @@ class FirebaseTest extends Unit
         Di::reset();
     }
 
-    public function testGenerate() {
-        $this->testSubject->setAlgorithm('some-hash');
-        $this->tester->assertEquals('some-string', $this->testSubject->generateToken(['some-data' => 'some-value']));
-        $this->tester->assertArrayHasKey('iat', $this->testSubject->wasCalled);
-        $this->tester->assertArrayHasKey('jti', $this->testSubject->wasCalled);
-        $this->tester->assertArrayHasKey('iss', $this->testSubject->wasCalled);
-        $this->tester->assertArrayHasKey('nbf', $this->testSubject->wasCalled);
-        $this->tester->assertArrayHasKey('exp', $this->testSubject->wasCalled);
-        $this->tester->assertArrayHasKey('data', $this->testSubject->wasCalled);
-        $this->tester->assertEquals(['some-data' => 'some-value'], $this->testSubject->wasCalled['data']);
+    public function testSetupException()
+    {
+        $this->tester->expectException(
+            new \RuntimeException('Missing Firebase JWT Library'),
+            function () {
+                $reflectionProperty = new \ReflectionProperty(Firebase::class, 'className');
+                $reflectionProperty->setAccessible(true);
+                $reflectionProperty->setValue($this->testSubject, false);
+
+                $reflectionMethod = new \ReflectionMethod(Firebase::class, 'checkRequirements');
+                $reflectionMethod->setAccessible(true);
+                $reflectionMethod->invoke($this->testSubject);
+            }
+        );
     }
 
+    public function testGenerate() {
+        $jsonToken = $this->testSubject->generateToken(['some-data' => 'some-value']);
+        $tokenData = $this->testSubject->parseToken($jsonToken);
+        $this->assertEquals(
+            [
+                'some-data' => 'some-value'
+            ],
+            (array) $tokenData->data
+        );
 
+        $this->assertEquals(64, strlen($tokenData->jti));
+    }
 }

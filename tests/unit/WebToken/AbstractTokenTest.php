@@ -15,7 +15,7 @@ use Phalcon\Config;
 use Phalcon\Crypt;
 use Phalcon\Di;
 use Phalcon\Di\FactoryDefault;
-use TwistersFury\Phalcon\Json\Tests\AbstractToken;
+use TwistersFury\Phalcon\Json\WebToken\AbstractToken;
 
 class AbstractTokenTest extends Unit
 {
@@ -29,8 +29,6 @@ class AbstractTokenTest extends Unit
 
     protected function _before()
     {
-        require_once __DIR__ . '/../../_data/WebToken/AbstractToken.php';
-
         $filesRoot = vfsStream::setup('root');
         $filesRoot->addChild(
             vfsStream::newFile('someFile.key')
@@ -43,7 +41,13 @@ class AbstractTokenTest extends Unit
 
         Di::setDefault($diInstance);
 
-        $this->testSubject = $diInstance->get(AbstractToken::class);
+        /** @var AbstractToken testSubject */
+        $this->testSubject = $this->getMockBuilder(AbstractToken::class)
+            ->getMockForAbstractClass();
+
+        $this->testSubject->setDI($diInstance);
+
+        $this->testSubject->setStartTime(100);
     }
 
     protected function _after()
@@ -51,8 +55,46 @@ class AbstractTokenTest extends Unit
         Di::reset();
     }
 
-    // tests
+    public function testThrowsCryptException()
+    {
+        $this->tester->expectException(
+            new \RuntimeException('Missing "crypt" service in DIC'),
+            function () {
+                $diInstance = new FactoryDefault();
+                $diInstance->remove('crypt');
+
+                Di::setDefault($diInstance);
+
+                /** @var AbstractToken testSubject */
+                $this->testSubject = $this->getMockBuilder(AbstractToken::class)
+                                          ->getMockForAbstractClass();
+
+                $this->testSubject->setDI($diInstance);
+            }
+        );
+    }
+
     public function testThrowsConfigException()
+    {
+        $this->tester->expectException(
+            new \RuntimeException('Missing "config" service in DIC'),
+            function () {
+                $diInstance = new FactoryDefault();
+                $diInstance->remove('config');
+
+                Di::setDefault($diInstance);
+
+                /** @var AbstractToken testSubject */
+                $this->testSubject = $this->getMockBuilder(AbstractToken::class)
+                                          ->getMockForAbstractClass();
+
+                $this->testSubject->setDI($diInstance);
+            }
+        );
+    }
+
+    // tests
+    public function testThrowsConfigMissingException()
     {
         $this->tester->expectException(new \RuntimeException('JSON Configuration Key Missing ("json")'), function() {
             $diInstance = new FactoryDefault();
@@ -60,7 +102,11 @@ class AbstractTokenTest extends Unit
 
             Di::setDefault($diInstance);
 
-            $diInstance->get(AbstractToken::class);
+            /** @var AbstractToken testSubject */
+            $this->testSubject = $this->getMockBuilder(AbstractToken::class)
+                                      ->getMockForAbstractClass();
+
+            $this->testSubject->setDI($diInstance);
         });
     }
 
@@ -76,14 +122,18 @@ class AbstractTokenTest extends Unit
 
                 Di::setDefault($diInstance);
 
-                $diInstance->get(AbstractToken::class);
+                /** @var AbstractToken testSubject */
+                $this->testSubject = $this->getMockBuilder(AbstractToken::class)
+                                          ->getMockForAbstractClass();
+
+                $this->testSubject->setDI($diInstance);
             }
         );
     }
 
     public function testAlgorithmThrowsException() {
-        $this->tester->expectException(new \InvalidArgumentException('Hash Algorithm Invalid: invalid'), function() {
-            $this->testSubject->setAlgorithm('invalid');
+        $this->tester->expectException(new \InvalidArgumentException('Hash Algorithm Invalid: '), function() {
+            $this->testSubject->setAlgorithm('');
         });
     }
 
@@ -95,10 +145,31 @@ class AbstractTokenTest extends Unit
         $this->tester->assertEquals('some-master-keysome-key', $reflectionMethod->invoke($this->testSubject));
     }
 
-    public function testDefaultConfig()
+    public function testExpirationLength()
     {
         $this->assertEquals(300, $this->testSubject->getExpirationLength());
-        $this->assertEquals('twistersfury/phalcon-json', $this->testSubject->getIssuer());
+        $this->testSubject->setExpirationLength(500);
+        $this->assertEquals(500, $this->testSubject->getExpirationLength());
+    }
+
+    public function testStartTime()
+    {
+        $this->assertLessThanOrEqual(time(), $this->testSubject->getStartTime());
+        $this->testSubject->setStartTime(10);
+        $this->assertEquals(10, $this->testSubject->getStartTime());
+    }
+
+    public function testAlgorithm()
+    {
         $this->assertEquals('HS512', $this->testSubject->getAlgorithm());
+        $this->testSubject->setAlgorithm('Something');
+        $this->assertEquals('Something', $this->testSubject->getAlgorithm());
+    }
+
+    public function testIssuer()
+    {
+        $this->assertEquals('twistersfury/phalcon-json', $this->testSubject->getIssuer());
+        $this->testSubject->setIssuer('some-one');
+        $this->assertEquals('some-one', $this->testSubject->getIssuer());
     }
 }

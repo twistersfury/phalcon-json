@@ -14,15 +14,23 @@
     {
         private $className = null;
         
-        public function __construct() {
-            if (class_exists('\Firebase\JWT\JWT')) {
-                $this->className = '\Firebase\JWT\JWT';
-            } elseif (class_exists('\JWT')) {
-                $this->className = '\JWT'; 
+        public function __construct()
+        {
+            $this->checkRequirements();
+        }
+
+        private function checkRequirements()
+        {
+            if ($this->className === null) {
+                if (class_exists('\Firebase\JWT\JWT')) {
+                    $this->className = '\Firebase\JWT\JWT';
+                } elseif (class_exists('\JWT')) {
+                    $this->className = '\JWT';
+                }
             }
-            
+
             if (!$this->className) {
-                throw new \RuntimeException('Missing Firebase JWT Library'); //@cofffdeCoverageIgnore
+                throw new \RuntimeException('Missing Firebase JWT Library');
             }
         }
 
@@ -42,8 +50,8 @@
                     'iat'  => time(),
                     'jti'  => $randomGenerator->hex( 32 ),
                     'iss'  => $this->getIssuer(),
-                    'nbf'  => time(),
-                    'exp'  => time() + $this->getExpirationLength(),
+                    'nbf'  => $this->getStartTime(),
+                    'exp'  => $this->getStartTime() + $this->getExpirationLength(),
                 ],
                 $tokenBase
             );
@@ -69,7 +77,7 @@
          * @return string
          * @codeCoverageIgnore
          */
-        public function encode(array $tokenData) : string
+        private function encode(array $tokenData) : string
         {
             $className = $this->className;
             return $className::encode(
@@ -85,7 +93,7 @@
          * @return object
          * @codeCoverageIgnore
          */
-        public function decode(string $jsonToken) : \stdClass
+        private function decode(string $jsonToken) : \stdClass
         {
             $className = $this->className;
             return $className::decode(
