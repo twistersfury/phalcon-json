@@ -9,6 +9,11 @@
 
     use Phalcon\Loader;
 
+    //JIC - Usually Means Composer Install Is Running And Phalcon Isn't Installed (IE: CI)
+    if (!class_exists('\Phalcon\Loader')) {
+        return;
+    }
+
     (new Loader())
         ->registerNamespaces(
             [
